@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo List</title>
+</head>
+<body>
+    <h1>Todo List</h1>
+    <div>
+        
+        <input type="text" id="taskName" placeholder="タスクを入力してください">
+        <input type="date" id="taskDate" placeholder="日付を選択してください。">
+        <button onclick="addTask()">追加</button>
+    </div>
+
+    <h2>タスク</h2>
+    <ul id="taskList"></ul>
+
+    <script>
+        let tasks=[];
+
+        function addTask() {
+            const taskName=document.getElementById('taskName').value;
+            const taskDate=document.getElementById('taskDate').value;
+          
+
+            if (taskName==='' || taskDate==='') {
+                alert('日付とタスク内容を入力してください');
+                return;
+            }
+
+            tasks.push({
+                name:taskName,
+                date:new Date(taskDate),
+                completed:false
+            });
+
+            taskBoard();
+        }
+
+        function completeTask(index) {
+            tasks[index].completed = true;
+            taskBoard();
+        }
+
+        function deleteTask(index) {
+            if (tasks[index].completed) {
+                tasks.splice(index, 1);
+                taskBoard();
+            } else {
+                alert('完了済のタスクのみ削除可能です');
+            }
+        }
+
+        function taskBoard() {
+            const taskList=document.getElementById('taskList');
+            taskList.innerHTML='';
+
+            const incompleteTasks=tasks.filter(task=>!task.completed).sort((a, b) =>b.date-a.date);
+            const completeTasks=tasks.filter(task=>task.completed).sort((a, b) =>b.date-a.date);
+
+            incompleteTasks.forEach((task, index) => {
+                const taskItem=document.createElement('li');
+                taskItem.innerHTML=`${task.date.toLocaleDateString()} - ${task.name} 
+                    <button onclick="completeTask(${tasks.indexOf(task)})">完了</button>`;
+                taskList.appendChild(taskItem);
+            });
+
+            completeTasks.forEach((task, index) => {
+                const taskItem = document.createElement('li');
+                taskItem.innerHTML=`${task.date.toLocaleDateString()}-${task.name} [完了しました]
+                    <button onclick="deleteTask(${tasks.indexOf(task)})">削除</button>`;
+                taskList.appendChild(taskItem);
+            });
+        }
+    </script>
+</body>
+</html>
